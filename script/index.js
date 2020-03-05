@@ -1,10 +1,8 @@
-/**
- * Function to ctreate HTML Node
- * @param {String} tag
- * @param {Array} attrs
- * @param {Array|String|null} inner
- * @return {Node}
- */
+const app = document.getElementById("app");
+let data =
+  '{"accounts":[{"title":"One Line Item #1","img":"https://image.shutterstock.com/image-photo/image-260nw-1389088238.jpg"},{"title":"One Line Item #2","img":"https://image.shutterstock.com/image-photo/image-260nw-1389088238.jpg"},{"title":"One Line Item #3","img":"https://image.shutterstock.com/image-photo/image-260nw-1389088238.jpg"}]}';
+let dataRes = JSON.parse(data);
+
 const createHTMLNode = (tag, attrs, inner) => {
   const element = document.createElement(tag);
   attrs.map(attr => {
@@ -17,16 +15,20 @@ const createHTMLNode = (tag, attrs, inner) => {
     : null;
   return element;
 };
-const renderInApp = htmlNode => {
-  document.getElementById("app").innerHTML = "";
-  htmlNode.map(el => document.getElementById("app").appendChild(el));
+const renderInNode = (htmlNode, parentNode) => {
+  parentNode.innerHTML = "";
+  htmlNode.map(el => parentNode.appendChild(el));
 };
 
-let data =
-  '{"accounts":[{"title":"One Line Item #1","img":"https://image.shutterstock.com/image-photo/image-260nw-1389088238.jpg"},{"title":"One Line Item #2","img":"https://image.shutterstock.com/image-photo/image-260nw-1389088238.jpg"},{"title":"One Line Item #3","img":"https://image.shutterstock.com/image-photo/image-260nw-1389088238.jpg"}]}';
-let dataRes = JSON.parse(data);
-console.log(dataRes.accounts);
-// data = JSON.stringify(dataRes);
+const removeItem = (dataObj, i) => {
+  dataObj.accounts.splice(i, 1);
+  data = JSON.stringify(dataObj);
+};
+
+const addActive = () => {
+  document.querySelector("li:first-child") &&
+    document.querySelector("li:first-child").focus();
+};
 
 const dataList = () => {
   return createHTMLNode(
@@ -38,7 +40,6 @@ const dataList = () => {
         i == 0
           ? [
               { name: "tabindex", value: ["0"] },
-              //   { name: "class", value: ["active"] },
               { name: "value", value: [i] }
             ]
           : [
@@ -53,8 +54,7 @@ const dataList = () => {
     )
   );
 };
-
-const btnScreenOne = () => {
+const btnFirstPage = () => {
   return createHTMLNode(
     "button",
     [{ name: "class", value: ["btn-screen-1"] }],
@@ -62,112 +62,131 @@ const btnScreenOne = () => {
   );
 };
 
-// screen2
-const screenTwoWrap = createHTMLNode(
-  "div",
-  [{ name: "class", value: ["screen-wrap"] }],
-  [
-    createHTMLNode("input", [{ name: "type", value: ["text"] }], null),
-    createHTMLNode(
-      "button",
-      [{ name: "class", value: ["btn-add-screen-2", "active"] }],
-      "ADD"
-    ),
-    createHTMLNode(
-      "button",
-      [{ name: "class", value: ["btn-cancel-screen-2"] }],
-      "Cancel"
-    )
-  ]
-);
-
-renderInApp([dataList(), btnScreenOne()]);
-// renderInApp([screenTwoWrap]);
-
-const removeItem = (dataObj, i) => {
-  return (dataObj = dataObj.accounts.splice(i, 1));
+const btnWrap = () => {
+  return createHTMLNode(
+    "div",
+    [{ name: "class", value: ["btn-wrap"] }],
+    [btnFirstPage()]
+  );
 };
 
-const addActive = () => {
-  document.querySelector("li:first-child") &&
-    document.querySelector("li:first-child").focus();
+const showPageOne = () => {
+  renderInNode([dataList(), btnWrap()], app);
+  addActive();
+  addDataListHandler();
 };
-addActive();
 
-const addBtnScreenOneHandler = q => {
+const rerenderBtn = currentElem => {
+  const btnWrap = document.querySelector(".btn-wrap");
+  btnWrap.innerHTML = "";
+  renderInNode([btnFirstPage()], btnWrap);
   const btn_1 = document.querySelector(".btn-screen-1");
   btn_1.focus();
   btn_1.addEventListener("keyup", event => {
     switch (event.which) {
       case 37:
-        console.log(q);
-        q.focus();
+        currentElem.focus();
+        break;
+      case 13:
+        showPageTwo();
     }
   });
 };
-//    listener
-const addListenerFromList = () => {
+
+const addDataListHandler = () => {
   const items = document.querySelectorAll("li");
-  [].map.call(items, el =>
+  [].forEach.call(items, el =>
     el.addEventListener("keyup", event => {
       switch (event.which) {
         case 40:
-          console.log("down");
           if (event.target.nextElementSibling) {
             event.target.nextElementSibling.focus();
-            // event.target.nextElementSibling.classList.add("active");
-            // event.target.classList.remove("active");
           }
           break;
         case 38:
           if (event.target.previousElementSibling) {
             event.target.previousElementSibling.focus();
-            // event.target.previousElementSibling.classList.add("active");
-            // event.target.classList.remove("active");
           }
-          console.log("up");
           break;
         case 37:
-          console.log(event.target.innerText, "left");
-          console.log(dataRes);
           removeItem(dataRes, event.target.value);
-          renderInApp([dataList(), btnScreenOne()]);
-          addActive();
-          addListenerFromList();
+          showPageOne();
+          items.length === 1 && rerenderBtn(event.target);
           break;
         case 39:
-          addBtnScreenOneHandler(event.target);
-          console.log(event.target.innerText, "right");
+          rerenderBtn(event.target);
           break;
       }
-
-      //   console.log(event);
     })
   );
 };
-addListenerFromList();
 
-// activeElement.addEventListener("keyup", event => {
-//   console.log(event.target.nextElementSibling);
-//   console.log(event);
-//   switch (event.which) {
-//     case 40:
-//       console.log("down");
-//       event.target.nextElementSibling.focus();
-//       event.target.nextElementSibling.classList.add("active");
-//       break;
-//     case 38:
-//       event.target.previousElementSibling.focus();
-//       event.target.previousElementSibling.classList.add("active");
-//       console.log("up");
-//       break;
-//     case 37:
-//       console.log("left");
-//       break;
-//     case 39:
-//       console.log("right");
-//       break;
-//   }
-
-//   //   console.log(event);
-// });
+const renderPageTwo = () => {
+  return createHTMLNode(
+    "div",
+    [{ name: "class", value: ["screen-wrap"] }],
+    [
+      createHTMLNode("input", [{ name: "type", value: ["text"] }], null),
+      createHTMLNode("button", [{ name: "class", value: ["btn-add"] }], "ADD"),
+      createHTMLNode(
+        "button",
+        [{ name: "class", value: ["btn-cancel"] }],
+        "Cancel"
+      )
+    ]
+  );
+};
+const showPageTwo = () => {
+  renderInNode([renderPageTwo()], app);
+  const input = document.querySelector("input");
+  const btnAdd = document.querySelector(".btn-add");
+  const btnCancel = document.querySelector(".btn-cancel");
+  input.focus();
+  const addNewItem = (dataObj, text) => {
+    dataObj.accounts.push({
+      title: text,
+      img:
+        "https://image.shutterstock.com/image-photo/image-260nw-1389088238.jpg"
+    });
+    data = JSON.stringify(dataObj);
+  };
+  input.addEventListener("keyup", event => {
+    if (event.which === 40) {
+      if (input.getAttribute("data_prev".replace(/_/, "-")) === "cancel") {
+        btnCancel.focus();
+      } else if (input.getAttribute("data_prev".replace(/_/, "-")) === "add") {
+        btnAdd.focus();
+      } else btnAdd.focus();
+    }
+  });
+  btnAdd.addEventListener("keyup", event => {
+    switch (event.which) {
+      case 38:
+        input.focus();
+        input.setAttribute("data-prev", "add");
+        break;
+      case 39:
+        btnCancel.focus();
+        break;
+      case 13:
+        addNewItem(dataRes, input.value);
+        input.value = "";
+        showPageOne();
+    }
+  });
+  btnCancel.addEventListener("keyup", event => {
+    switch (event.which) {
+      case 38:
+        input.focus();
+        input.setAttribute("data-prev", "cancel");
+        break;
+      case 37:
+        btnAdd.focus();
+        break;
+      case 13:
+        input.value = "";
+        showPageOne();
+    }
+  });
+};
+showPageOne();

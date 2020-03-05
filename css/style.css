@@ -1,15 +1,13 @@
-button,
-button:active {
+button {
   background-color: rgb(248, 244, 244);
   border: 2px solid rgb(145, 144, 144);
 }
-*:focus {
-  outline: none;
-}
-
 #app {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+}
+#app *:focus {
+  outline: 2px solid rgb(31, 174, 231);
 }
 ul {
   list-style: none;
@@ -44,7 +42,7 @@ img {
 .screen-wrap button {
   padding: 10px 20px;
 }
-
-#app *:focus {
-  outline: 2px solid rgb(31, 174, 231);
+.btn-wrap {
+  margin-left: 100px;
+  align-self: center;
 }
