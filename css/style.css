@@ -1,0 +1,50 @@
+button,
+button:active {
+  background-color: rgb(248, 244, 244);
+  border: 2px solid rgb(145, 144, 144);
+}
+*:focus {
+  outline: none;
+}
+
+#app {
+  display: flex;
+  justify-content: space-around;
+}
+ul {
+  list-style: none;
+}
+li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+li > div {
+  margin-left: 10px;
+}
+img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.btn-screen-1 {
+  align-self: center;
+  padding: 10px 20px;
+}
+.screen-wrap {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.screen-wrap input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+.screen-wrap button {
+  padding: 10px 20px;
+}
+
+#app *:focus {
+  outline: 2px solid rgb(31, 174, 231);
+}
