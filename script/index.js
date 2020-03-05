@@ -25,11 +25,16 @@ const removeItem = (dataObj, i) => {
   data = JSON.stringify(dataObj);
 };
 
-const addActive = () => {
+const selectActivElem = () => {
   document.querySelector("li:first-child") &&
     document.querySelector("li:first-child").focus();
 };
-
+const showPageOne = () => {
+  renderInNode([dataList(), btnWrap()], app);
+  selectActivElem();
+  addDataListHandler();
+  !dataRes.accounts.length ? rerenderBtn() : null;
+};
 const dataList = () => {
   return createHTMLNode(
     "ul",
@@ -37,15 +42,10 @@ const dataList = () => {
     dataRes.accounts.map((el, i) =>
       createHTMLNode(
         "li",
-        i == 0
-          ? [
-              { name: "tabindex", value: ["0"] },
-              { name: "value", value: [i] }
-            ]
-          : [
-              { name: "tabindex", value: ["0"] },
-              { name: "value", value: [i] }
-            ],
+        [
+          { name: "tabindex", value: ["0"] },
+          { name: "value", value: [i] }
+        ],
         [
           createHTMLNode("img", [{ name: "src", value: [el.img] }], null),
           createHTMLNode("div", [], el.title)
@@ -57,7 +57,7 @@ const dataList = () => {
 const btnFirstPage = () => {
   return createHTMLNode(
     "button",
-    [{ name: "class", value: ["btn-screen-1"] }],
+    [{ name: "class", value: ["btn-page-one"] }],
     "ADD"
   );
 };
@@ -70,17 +70,11 @@ const btnWrap = () => {
   );
 };
 
-const showPageOne = () => {
-  renderInNode([dataList(), btnWrap()], app);
-  addActive();
-  addDataListHandler();
-};
-
 const rerenderBtn = currentElem => {
   const btnWrap = document.querySelector(".btn-wrap");
   btnWrap.innerHTML = "";
   renderInNode([btnFirstPage()], btnWrap);
-  const btn_1 = document.querySelector(".btn-screen-1");
+  const btn_1 = document.querySelector(".btn-page-one");
   btn_1.focus();
   btn_1.addEventListener("keyup", event => {
     switch (event.which) {
@@ -169,9 +163,12 @@ const showPageTwo = () => {
         btnCancel.focus();
         break;
       case 13:
-        addNewItem(dataRes, input.value);
-        input.value = "";
-        showPageOne();
+        if (input.value) {
+          addNewItem(dataRes, input.value);
+          input.value = "";
+          showPageOne();
+        }
+        input.placeholder = "Please enter text";
     }
   });
   btnCancel.addEventListener("keyup", event => {
