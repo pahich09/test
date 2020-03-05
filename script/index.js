@@ -85,6 +85,7 @@ const rerenderBtn = currentElem => {
         showPageTwo();
     }
   });
+
 };
 
 const addDataListHandler = () => {
