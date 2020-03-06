@@ -26,14 +26,16 @@ const removeItem = (dataObj, i) => {
 };
 
 const selectActivElem = () => {
-  document.querySelector("li:first-child") &&
-    document.querySelector("li:first-child").focus();
+  dataRes.accounts.length
+    ?
+    document.querySelector("li:first-child").focus()
+    :
+    document.querySelector(".btn-page-one").focus();
 };
 const showPageOne = () => {
   renderInNode([dataList(), btnWrap()], app);
-  selectActivElem();
   addDataListHandler();
-  !dataRes.accounts.length ? rerenderBtn() : null;
+  selectActivElem();
 };
 const dataList = () => {
   return createHTMLNode(
@@ -44,7 +46,7 @@ const dataList = () => {
         "li",
         [
           { name: "tabindex", value: ["0"] },
-          { name: "value", value: [i] }
+          { name: "data-value", value: [i] }
         ],
         [
           createHTMLNode("img", [{ name: "src", value: [el.img] }], null),
@@ -54,42 +56,30 @@ const dataList = () => {
     )
   );
 };
-const btnFirstPage = () => {
-  return createHTMLNode(
-    "button",
-    [{ name: "class", value: ["btn-page-one"] }],
-    "ADD"
-  );
-};
-
 const btnWrap = () => {
   return createHTMLNode(
     "div",
     [{ name: "class", value: ["btn-wrap"] }],
-    [btnFirstPage()]
+    [createHTMLNode(
+      "button",
+      [{ name: "class", value: ["btn-page-one"] }],
+      "ADD"
+    )]
   );
 };
-
-const rerenderBtn = currentElem => {
-  const btnWrap = document.querySelector(".btn-wrap");
-  btnWrap.innerHTML = "";
-  renderInNode([btnFirstPage()], btnWrap);
+const addDataListHandler = () => {
+  const items = document.querySelectorAll("li");
   const btn_1 = document.querySelector(".btn-page-one");
-  btn_1.focus();
+  let tempElement;
   btn_1.addEventListener("keyup", event => {
     switch (event.which) {
       case 37:
-        currentElem.focus();
+        tempElement.focus();
         break;
       case 13:
         showPageTwo();
     }
   });
-
-};
-
-const addDataListHandler = () => {
-  const items = document.querySelectorAll("li");
   [].forEach.call(items, el =>
     el.addEventListener("keyup", event => {
       switch (event.which) {
@@ -104,12 +94,12 @@ const addDataListHandler = () => {
           }
           break;
         case 37:
-          removeItem(dataRes, event.target.value);
+          removeItem(dataRes, +event.target.getAttribute("data-value"));
           showPageOne();
-          items.length === 1 && rerenderBtn(event.target);
           break;
         case 39:
-          rerenderBtn(event.target);
+          btn_1.focus();
+          tempElement = event.target;
           break;
       }
     })
